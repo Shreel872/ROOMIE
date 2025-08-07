@@ -101,10 +101,10 @@ def get_ollama_response(prompt, use_history=True):
         else:
             full_prompt = f"Give a brief INFORMATIVE response: {prompt}"
         
-        print("🔗 Connecting to Ollama...")  # Debug info
+        print("Connecting to Ollama...")  # Debug info
             
         res = requests.post(
-            "http://127.0.0.1:11434/api/generate",
+            "http://IP:11434/api/generate", # taken my IP address out of this for obvious reasons
             json={
                 "model": "llama3:latest", 
                 "prompt": full_prompt,
@@ -185,7 +185,6 @@ def initialize_spotify():
         return False
 
 def handle_spotify_commands(user_input):
-    """Check if user wants to control Spotify and handle it"""
     global spotify_controller
     spotify_keywords = [
         "play", "pause", "stop", "next", "skip", "previous", "back",
@@ -425,7 +424,7 @@ def speak_text_windows_powershell(text):
             
     except Exception as e:
         print(f"ROOMIE says: {text}")
-access_key  = "yVgCoNgUgf+aHvjPwHh2L6hCR1SanP0WiLD8D8O+/e6x/zkJ5YPJgg=="
+access_key  = "SPOTIFY ACCESS KEY" #again taken out for obvious reasons
 def hotword_detect_loop():
     porcupine = pvporcupine.create(access_key = access_key,keywords=["computer"])
     pa = pyaudio.PyAudio()
@@ -693,3 +692,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
