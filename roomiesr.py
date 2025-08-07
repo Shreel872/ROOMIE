@@ -18,8 +18,9 @@ import pyaudio
 import pygame
 import os
 import asyncio
-
-# Add Spotify imports
+import whisper
+import pyaudio
+import wave
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from flask import Flask, request
@@ -89,7 +90,7 @@ class ConversationManager:
     
     def clear_history(self):
         self.conversation_history = []
-        print("🔄 Conversation history cleared!")
+        print("Conversation history cleared!")
 
 conversation = ConversationManager()
 def get_ollama_response(prompt, use_history=True):
@@ -137,20 +138,15 @@ def get_ollama_response(prompt, use_history=True):
             
             return ai_response
         else:
-            print(f"❌ HTTP Error: {res.status_code} - {res.text}")
             return "Sorry, I'm having connection issues"
-            
+    #ollama response error checks    
     except requests.exceptions.ConnectionError:
-        print("❌ Cannot connect to Ollama. Is it running?")
         return "I can't connect to my AI brain right now. Is Ollama running?"
     except requests.exceptions.Timeout:
-        print("❌ Ollama request timed out")
         return "Sorry, I'm thinking too slowly right now"
     except json.JSONDecodeError:
-        print("❌ Invalid JSON response from Ollama")
         return "I got a confusing response from my brain"
     except Exception as e:
-        print(f"❌ Unexpected error: {type(e).__name__}: {e}")
         return "Something unexpected happened"
 
 def initialize_spotify():
@@ -200,7 +196,7 @@ def handle_spotify_commands(user_input):
         
         # Initialize Spotify if not done already
         if spotify_controller is None or not spotify_controller.is_authenticated:
-            print("🎵 Setting up Spotify connection...")
+            print("Setting up Spotify connection...")
             if not initialize_spotify():
                 return "Sorry, I couldn't connect to Spotify right now."
         
@@ -464,7 +460,7 @@ def speechrecognition():
                       rate=16000, input=True, frames_per_buffer=8000)
     stream.start_stream()
 
-    print("🎤 Listening for command...")
+    print("Listening for command...")
     while True:
         data = stream.read(4000, exception_on_overflow=False)
         if rec.AcceptWaveform(data):
@@ -488,11 +484,6 @@ def play_startup_sound():
     finally:
         pygame.mixer.quit()
 
-import whisper
-import pyaudio
-import wave
-import tempfile
-import os
 
 def speechrecognition_whisper():
     """Use OpenAI Whisper for much better accuracy"""
@@ -569,10 +560,10 @@ class RoomieLogicSM:
                 conversation.clear_history()
                 asyncio.run(speak_edge_tts("Memory cleared! Starting fresh conversation."))         
             if user_input and user_input.strip():
-                print("🤔 ROOMIE is thinking...")
+                print("ROOMIE is thinking...")
                 response = get_ollama_response(user_input, use_history=True)
-                print(f"🤖 ROOMIE: {response}")
-                print(f"💭 Memory: {len(conversation.conversation_history)} exchanges")
+                print(f"ROOMIE: {response}")
+                print(f"Memory: {len(conversation.conversation_history)} exchanges")
                 
 
                 print(user_input)
@@ -662,8 +653,7 @@ def main():
                     asyncio.run(speak_edge_tts("Okay, stopping."))
                     hotkey = hotword_detect_loop()
                     continue
-                
-                # Check for Spotify commands SECOND
+
                 spotify_response = handle_spotify_commands(user_input)
                 if spotify_response:
                     print(f"Spotify: {spotify_response}")
@@ -672,18 +662,14 @@ def main():
                     hotkey = hotword_detect_loop()
                     continue
                 
-                # If not a Spotify command, process with Ollama
+      
                 print("ROOMIE is thinking...")
                 
                 response = get_ollama_response(user_input, use_history=True)
                 
                 print(f"ROOMIE: {response}")
                 print(f"Memory: {len(conversation.conversation_history)} exchanges")
-                
-                # Start audio playback in separate thread
                 audio_thread = asyncio.run(speak_edge_tts(response))
-                
-                # Wait for audio to finish or for interrupt
                 if audio_thread:
                     interrupted = wait_for_audio_or_interrupt()
                     if interrupted:
@@ -705,4 +691,5 @@ def main():
             continue
 
 if __name__ == "__main__":
+
     main()
