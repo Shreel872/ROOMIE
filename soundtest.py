@@ -1,23 +1,22 @@
 import pygame
 import os
-import subprocess  # Add this import
+import subprocess 
 
 def play_startup_sound():
     try:
         pygame.mixer.init()
-        # Use the correct WSL path format
-        sound_path = "/mnt/c/Users/crick/Downloads/startup.mp3"
+        sound_path = "/mnt/c/Users/crick/Downloads/startup.mp3" #might want to change this later to make it work universally
         
         if os.path.exists(sound_path):
             pygame.mixer.music.load(sound_path)
             pygame.mixer.music.play()
             while pygame.mixer.music.get_busy():
                 pygame.time.wait(100)
-            print("✅ Startup sound played successfully")
+            print("Startup sound played successfully")
         else:
-            print("⚠️ startup.mp3 not found at:", sound_path)
+            print("startup.mp3 not found at:", sound_path)
     except Exception as e:
-        print(f"⚠️ Could not play startup sound: {e}")
+        print(f"Could not play startup sound: {e}")
     finally:
         pygame.mixer.quit()
 
@@ -32,18 +31,18 @@ def play_startup_sound_ffplay():
             ], capture_output=True, timeout=10)
             
             if result.returncode == 0:
-                print("✅ Sound played with ffplay")
+                print("Sound played with ffplay")
             else:
                 # Fallback to pygame
                 play_startup_sound()
         else:
-            print("⚠️ startup.mp3 not found")
+            print("startup.mp3 not found")
             
     except FileNotFoundError:
-        print("⚠️ ffplay not found. Install with: sudo apt install ffmpeg")
+        print("ffplay not found. Install with: sudo apt install ffmpeg")
         play_startup_sound()  # Fallback
     except Exception as e:
-        print(f"⚠️ Could not play with ffplay: {e}")
+        print(f"Could not play with ffplay: {e}")
         play_startup_sound()  # Fallback
 
 def play_startup_sound_windows():
@@ -65,12 +64,12 @@ def play_startup_sound_windows():
         ], capture_output=True, text=True, timeout=8)
         
         if result.returncode == 0:
-            print("✅ Sound played with Windows Media Player")
+            print("Sound played with Windows Media Player")
         else:
-            print(f"❌ PowerShell error: {result.stderr}")
+            print(f"PowerShell error: {result.stderr}")
             
     except Exception as e:
-        print(f"⚠️ Could not play with Windows Media Player: {e}")
+        print(f"Could not play with Windows Media Player: {e}")
 
 # Test all methods
 if __name__ == "__main__":
@@ -81,4 +80,5 @@ if __name__ == "__main__":
     play_startup_sound_ffplay()
     
     print("\nTesting pygame method:")
+
     play_startup_sound()
