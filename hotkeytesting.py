@@ -35,7 +35,7 @@ def speechrecognition():
                       rate=16000, input=True, frames_per_buffer=8000)
     stream.start_stream()
 
-    print("🎤 Listening for command...")
+    print("Listening for command...")
 
     while True:
         data = stream.read(4000, exception_on_overflow=False)
@@ -57,13 +57,14 @@ def main():
                     print(f"Final command: {command}")
                     break
                 else:
-                    print("❌ No command detected, listening for hotword again...")
+                    print("No command detected, listening for hotword again...")
             else:
                 break
                 
         except KeyboardInterrupt:
-            print("\n👋 Exiting...")
+            print("\nExiting...")
             break
 
 if __name__ == "__main__":
+
     main()
