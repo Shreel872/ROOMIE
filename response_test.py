@@ -41,7 +41,7 @@ class ConversationManager:
     
     def clear_history(self):
         self.conversation_history = []
-        print("🔄 Conversation history cleared!")
+        print("Conversation history cleared!")
 
 conversation = ConversationManager()
 
@@ -58,9 +58,9 @@ def speech_to_text_with_hotword():
         with sr.Microphone() as source:
             r.adjust_for_ambient_noise(source, duration=0.5)
     except Exception:
-        print("⚠️ Microphone access limited, but continuing...")
+        print("Microphone access limited, but continuing...")
     
-    print("🎤 Say 'Hey ROOMIE' to activate...")
+    print("Say 'Hey ROOMIE' to activate...")
     
     while True:
         try:
@@ -79,7 +79,7 @@ def speech_to_text_with_hotword():
             text = r.recognize_google(audio).lower()
             
             if "hey roomie" in text or "hey roomy" in text or "roomie" in text:
-                print("✅ ROOMIE activated! What can I help you with?")
+                print("ROOMIE activated! What can I help you with?")
                 
                 # Now listen for the actual command
                 with sr.Microphone() as source:
@@ -94,18 +94,18 @@ def speech_to_text_with_hotword():
                             os.close(old_stderr)
                 
                 command = r.recognize_google(audio)
-                print(f"📝 Command: {command}")
+                print(f"Command: {command}")
                 return command
                 
         except sr.WaitTimeoutError:
-            continue  # Keep listening silently
+            continue  
         except sr.UnknownValueError:
-            continue  # Keep listening silently
+            continue  
         except sr.RequestError as e:
-            print(f"❌ Speech service error: {e}")
+            print(f"Speech service error: {e}")
             return None
         except Exception:
-            continue  # Suppress other audio errors
+            continue  
 
 def get_ollama_response(prompt, use_history=True):
     """Get response from Ollama with conversation context"""
@@ -123,7 +123,7 @@ def get_ollama_response(prompt, use_history=True):
                 "stream": False,
                 "options": {
                     "temperature": 0.7,
-                    "num_predict": 100,        # Slightly longer responses
+                    "num_predict": 100,        
                     "top_p": 0.8,
                     "repeat_penalty": 1.1,
                     "num_ctx": 2048,
@@ -182,13 +182,13 @@ def speak_text_windows_powershell(text):
             ], capture_output=True, text=True, timeout=30)
             
             if result.returncode != 0:
-                print(f"📢 ROOMIE says: {text}")
+                print(f"ROOMIE says: {text}")
                 break
         
-        print("✅ ROOMIE finished speaking")
+        print("ROOMIE finished speaking")
             
     except Exception as e:
-        print(f"📢 ROOMIE says: {text}")
+        print(f"ROOMIE says: {text}")
 
 def test_microphone_silent():
     """Test microphone without showing ALSA errors"""
@@ -209,27 +209,27 @@ def test_microphone_silent():
         return False
 
 def main():
-    print("🤖 ROOMIE - Voice AI Assistant")
+    print("ROOMIE - Voice AI Assistant")
     print("=" * 50)
     
     # Test microphone silently
     if test_microphone_silent():
-        print("✅ Microphone detected")
+        print("Microphone detected")
     else:
-        print("⚠️ Limited microphone access, but continuing...")
+        print("Limited microphone access, but continuing...")
     
-    print("🎙️ Starting ROOMIE...")
+    print("Starting ROOMIE...")
     speak_func = speak_text_windows_powershell
     
     print("\n" + "=" * 50)
-    print("🎤 VOICE MODE ACTIVATED")
+    print("VOICE MODE ACTIVATED")
     print("• Say 'Hey ROOMIE' to start conversation")
     print("• Say 'clear memory' to reset conversation")  
     print("• Say 'goodbye' or 'quit' to exit")
     print("=" * 50)
     
     # Startup message
-    print("\n🧪 ROOMIE initializing...")
+    print("\nROOMIE initializing...")
     speak_func("Hello! I'm ROOMIE, your voice assistant. Say hey ROOMIE to talk with me!")
     
     while True:
@@ -249,16 +249,15 @@ def main():
                 continue
             
             if user_input and user_input.strip():
-                print("🤔 ROOMIE is thinking...")
+                print("ROOMIE is thinking...")
                 response = get_ollama_response(user_input, use_history=True)
-                print(f"🤖 ROOMIE: {response}")
-                print(f"💭 Memory: {len(conversation.conversation_history)} exchanges")
+                print(f"ROOMIE: {response}")
                 
                 # Speak the response
                 speak_func(response)
                 
         except KeyboardInterrupt:
-            print("\n👋 Goodbye!")
+            print("\nGoodbye!")
             speak_func("Goodbye!")
             break
         except Exception as e:
@@ -266,4 +265,5 @@ def main():
             continue
 
 if __name__ == "__main__":
+
     main()
